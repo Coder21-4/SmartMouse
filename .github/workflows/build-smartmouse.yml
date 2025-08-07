@@ -1,0 +1,37 @@
+name: Build SmartMouse
+
+on:
+  workflow_dispatch: # Allows you to run this manually
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      # Step 1: Checks out your forked repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive' # Important: This downloads required sub-projects
+
+      # Step 2: Sets up the C++ Compiler environment
+      - name: Set up MSVC (C++ Compiler)
+        uses: ilammy/msvc-dev-cmd@v1
+
+      # Step 3: Runs the CMake configuration to prepare the build
+      - name: Configure CMake
+        run: cmake -B build -S .
+
+      # Step 4: Compiles the application
+      - name: Build with CMake
+        run: cmake --build build --config Release
+
+      # Step 5: Uploads the final .exe file
+      - name: Upload Finished Application
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartMouse-App
+          path: build/Release/SmartMouse.exe
